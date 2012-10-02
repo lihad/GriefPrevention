@@ -117,16 +117,16 @@ class EntityEventHandler implements Listener
 		}
 		
 		//special rule for creative worlds: explosions don't destroy anything
-		if(GriefPrevention.instance.creativeRulesApply(explodeEvent.getLocation()))
-		{
-			for(int i = 0; i < blocks.size(); i++)
-			{
-				Block block = blocks.get(i);
-				if(GriefPrevention.instance.config_mods_explodableIds.contains(block.getTypeId())) continue;
+		// if(GriefPrevention.instance.creativeRulesApply(explodeEvent.getLocation()))
+		// {
+			// for(int i = 0; i < blocks.size(); i++)
+			// {
+				// Block block = blocks.get(i);
+				// if(GriefPrevention.instance.config_mods_explodableIds.contains(block.getTypeId())) continue;
 				
-				blocks.remove(i--);
-			}
-		}
+				// blocks.remove(i--);
+			// }
+		// }
 		
 		//FEATURE: explosions don't damage claimed blocks	
 		Claim claim = null;
@@ -152,85 +152,85 @@ class EntityEventHandler implements Listener
 		}
 	}
 	
-	//when an item spawns...
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onItemSpawn(ItemSpawnEvent event)
-	{
-		//if in a creative world, cancel the event (don't drop items on the ground)
-		if(GriefPrevention.instance.creativeRulesApply(event.getLocation()))
-		{
-			event.setCancelled(true);
-		}
-	}
+	// //when an item spawns...
+	// @EventHandler(priority = EventPriority.LOWEST)
+	// public void onItemSpawn(ItemSpawnEvent event)
+	// {
+		// //if in a creative world, cancel the event (don't drop items on the ground)
+		// if(GriefPrevention.instance.creativeRulesApply(event.getLocation()))
+		// {
+			// event.setCancelled(true);
+		// }
+	// }
 	
-	//when an experience bottle explodes...
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onExpBottle(ExpBottleEvent event)
-	{
-		//if in a creative world, cancel the event (don't drop exp on the ground)
-		if(GriefPrevention.instance.creativeRulesApply(event.getEntity().getLocation()))
-		{
-			event.setExperience(0);
-		}
-	}
+	// //when an experience bottle explodes...
+	// @EventHandler(priority = EventPriority.LOWEST)
+	// public void onExpBottle(ExpBottleEvent event)
+	// {
+		// //if in a creative world, cancel the event (don't drop exp on the ground)
+		// if(GriefPrevention.instance.creativeRulesApply(event.getEntity().getLocation()))
+		// {
+			// event.setExperience(0);
+		// }
+	// }
 	
-	//when a creature spawns...
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onEntitySpawn(CreatureSpawnEvent event)
-	{
-		LivingEntity entity = event.getEntity();
+	// //when a creature spawns...
+	// @EventHandler(priority = EventPriority.LOWEST)
+	// public void onEntitySpawn(CreatureSpawnEvent event)
+	// {
+		// LivingEntity entity = event.getEntity();
 		
-		//these rules apply only to creative worlds
-		if(!GriefPrevention.instance.creativeRulesApply(entity.getLocation())) return;
+		// //these rules apply only to creative worlds
+		// if(!GriefPrevention.instance.creativeRulesApply(entity.getLocation())) return;
 		
-		//chicken eggs and breeding could potentially make a mess in the wilderness, once griefers get involved
-		SpawnReason reason = event.getSpawnReason();
-		if(reason != SpawnReason.SPAWNER_EGG && reason != SpawnReason.BUILD_IRONGOLEM && reason != SpawnReason.BUILD_SNOWMAN)
-		{
-			event.setCancelled(true);
-			return;
-		}
+		// //chicken eggs and breeding could potentially make a mess in the wilderness, once griefers get involved
+		// SpawnReason reason = event.getSpawnReason();
+		// if(reason != SpawnReason.SPAWNER_EGG && reason != SpawnReason.BUILD_IRONGOLEM && reason != SpawnReason.BUILD_SNOWMAN)
+		// {
+			// event.setCancelled(true);
+			// return;
+		// }
 
-		//otherwise, just apply the limit on total entities per claim (and no spawning in the wilderness!)
-		Claim claim = this.dataStore.getClaimAt(event.getLocation(), false, null);
-		if(claim == null || claim.allowMoreEntities() != null)
-		{
-			event.setCancelled(true);
-			return;
-		}
-	}
+		// //otherwise, just apply the limit on total entities per claim (and no spawning in the wilderness!)
+		// Claim claim = this.dataStore.getClaimAt(event.getLocation(), false, null);
+		// if(claim == null || claim.allowMoreEntities() != null)
+		// {
+			// event.setCancelled(true);
+			// return;
+		// }
+	// }
 	
 	//when an entity dies...
-	@EventHandler
-	public void onEntityDeath(EntityDeathEvent event)
-	{
-		LivingEntity entity = event.getEntity();
+	// @EventHandler
+	// public void onEntityDeath(EntityDeathEvent event)
+	// {
+		// LivingEntity entity = event.getEntity();
 		
-		//special rule for creative worlds: killed entities don't drop items or experience orbs
-		if(GriefPrevention.instance.creativeRulesApply(entity.getLocation()))
-		{
-			event.setDroppedExp(0);
-			event.getDrops().clear();			
-		}
+		// //special rule for creative worlds: killed entities don't drop items or experience orbs
+		// if(GriefPrevention.instance.creativeRulesApply(entity.getLocation()))
+		// {
+			// event.setDroppedExp(0);
+			// event.getDrops().clear();			
+		// }
 		
 		//FEATURE: when a player is involved in a siege (attacker or defender role)
 		//his death will end the siege
 		
-		if(!(entity instanceof Player)) return;  //only tracking players
+		// if(!(entity instanceof Player)) return;  //only tracking players
 		
-		Player player = (Player)entity;
-		PlayerData playerData = this.dataStore.getPlayerData(player.getName());
+		// Player player = (Player)entity;
+		// PlayerData playerData = this.dataStore.getPlayerData(player.getName());
 		
 		//if involved in a siege
-		if(playerData.siegeData != null)
-		{
-			//don't drop items as usual, they will be sent to the siege winner
-			event.getDrops().clear();
+		// if(playerData.siegeData != null)
+		// {
+			// //don't drop items as usual, they will be sent to the siege winner
+			// event.getDrops().clear();
 			
-			//end it, with the dieing player being the loser
-			this.dataStore.endSiege(playerData.siegeData, null, player.getName(), true /*ended due to death*/);
-		}
-	}
+			// //end it, with the dieing player being the loser
+			// this.dataStore.endSiege(playerData.siegeData, null, player.getName(), true /*ended due to death*/);
+		// }
+	// }
 	
 	//when an entity picks up an item
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -277,7 +277,7 @@ class EntityEventHandler implements Listener
 		
 		//if the player doesn't have build permission, don't allow the breakage
 		Player playerRemover = (Player)entityEvent.getRemover();
-        String noBuildReason = GriefPrevention.instance.allowBuild(playerRemover, event.getPainting().getLocation());
+        String noBuildReason = GriefPrevention.instance.allowBuild(playerRemover, GriefPrevention.instance.dataStore.getPlayerData(playerRemover.getName()), event.getPainting().getLocation());
         if(noBuildReason != null)
         {
         	event.setCancelled(true);
@@ -292,7 +292,8 @@ class EntityEventHandler implements Listener
 		//FEATURE: similar to above, placing a painting requires build permission in the claim
 	
 		//if the player doesn't have permission, don't allow the placement
-		String noBuildReason = GriefPrevention.instance.allowBuild(event.getPlayer(), event.getPainting().getLocation());
+        Player player = event.getPlayer();
+		String noBuildReason = GriefPrevention.instance.allowBuild(player, GriefPrevention.instance.dataStore.getPlayerData(player.getName()), event.getPainting().getLocation());
         if(noBuildReason != null)
         {
         	event.setCancelled(true);
@@ -301,20 +302,20 @@ class EntityEventHandler implements Listener
         }
 		
 		//otherwise, apply entity-count limitations for creative worlds
-		else if(GriefPrevention.instance.creativeRulesApply(event.getPainting().getLocation()))
-		{
-			PlayerData playerData = this.dataStore.getPlayerData(event.getPlayer().getName());
-			Claim claim = this.dataStore.getClaimAt(event.getBlock().getLocation(), false, playerData.lastClaim);
-			if(claim == null) return;
+		// else if(GriefPrevention.instance.creativeRulesApply(event.getPainting().getLocation()))
+		// {
+			// PlayerData playerData = this.dataStore.getPlayerData(event.getPlayer().getName());
+			// Claim claim = this.dataStore.getClaimAt(event.getBlock().getLocation(), false, playerData.lastClaim);
+			// if(claim == null) return;
 			
-			String noEntitiesReason = claim.allowMoreEntities();
-			if(noEntitiesReason != null)
-			{
-				GriefPrevention.sendMessage(event.getPlayer(), TextMode.Err, noEntitiesReason);
-				event.setCancelled(true);
-				return;
-			}
-		}
+			// String noEntitiesReason = claim.allowMoreEntities();
+			// if(noEntitiesReason != null)
+			// {
+				// GriefPrevention.sendMessage(event.getPlayer(), TextMode.Err, noEntitiesReason);
+				// event.setCancelled(true);
+				// return;
+			// }
+		// }
 	}
 	
 	//when an entity is damaged
@@ -428,7 +429,7 @@ class EntityEventHandler implements Listener
 					//otherwise the player damaging the entity must have permission
 					else
 					{		
-						String noContainersReason = claim.allowContainers(attacker);
+						String noContainersReason = claim.allowContainers(attacker, playerData);
 						if(noContainersReason != null)
 						{
 							event.setCancelled(true);
@@ -505,7 +506,7 @@ class EntityEventHandler implements Listener
 			//otherwise the player damaging the entity must have permission
 			else
 			{		
-				String noContainersReason = claim.allowContainers(attacker);
+				String noContainersReason = claim.allowContainers(attacker, playerData);
 				if(noContainersReason != null)
 				{
 					event.setCancelled(true);

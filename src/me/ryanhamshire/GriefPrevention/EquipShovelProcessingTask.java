@@ -53,11 +53,11 @@ class EquipShovelProcessingTask implements Runnable
 			GriefPrevention.sendMessage(player, TextMode.Instr, Messages.RemainingBlocks, String.valueOf(remainingBlocks));
 			
 			//link to a video demo of land claiming, based on world type
-			if(GriefPrevention.instance.creativeRulesApply(player.getLocation()))
-			{
-				GriefPrevention.sendMessage(player, TextMode.Instr, Messages.CreativeBasicsDemoAdvertisement);			
-			}
-			else
+			// if(GriefPrevention.instance.creativeRulesApply(player.getLocation()))
+			// {
+				// GriefPrevention.sendMessage(player, TextMode.Instr, Messages.CreativeBasicsDemoAdvertisement);			
+			// }
+			// else
 			{
 				GriefPrevention.sendMessage(player, TextMode.Instr, Messages.SurvivalBasicsDemoAdvertisement);
 			}

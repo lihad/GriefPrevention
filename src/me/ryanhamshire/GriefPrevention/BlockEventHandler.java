@@ -101,19 +101,20 @@ public class BlockEventHandler implements Listener
 			PlayerInventory playerInventory = player.getInventory();
 			ItemStack stackInHand = playerInventory.getItemInHand();
 			if(stackInHand == null || stackInHand.getType() == Material.AIR) return;
-			
+
+			PlayerData playerData = this.dataStore.getPlayerData(event.getPlayer().getName());
+
 			//only care if the chest is in a claim, and the player does not have access to the chest
 			Claim claim = this.dataStore.getClaimAt(block.getLocation(), false, null);
-			if(claim == null || claim.allowContainers(player) == null) return;
+			if(claim == null || claim.allowContainers(player, playerData) == null) return;
 			
 			//if the player is under siege, he can't give away items
-			PlayerData playerData = this.dataStore.getPlayerData(event.getPlayer().getName());
-			if(playerData.siegeData != null)
-			{
-				GriefPrevention.sendMessage(player, TextMode.Err, Messages.SiegeNoDrop);
-				event.setCancelled(true);
-				return;
-			}
+			// if(playerData.siegeData != null)
+			// {
+				// GriefPrevention.sendMessage(player, TextMode.Err, Messages.SiegeNoDrop);
+				// event.setCancelled(true);
+				// return;
+			// }
 			
 			//NOTE: to eliminate accidental give-aways, first hit on a chest displays a confirmation message
 			//subsequent hits donate item to the chest
@@ -161,10 +162,11 @@ public class BlockEventHandler implements Listener
 	public void onBlockBreak(BlockBreakEvent breakEvent)
 	{
 		Player player = breakEvent.getPlayer();
-		Block block = breakEvent.getBlock();		
+        PlayerData playerData = this.dataStore.getPlayerData(player.getName());
+		Block block = breakEvent.getBlock();
 		
 		//make sure the player is allowed to break at the location
-		String noBuildReason = GriefPrevention.instance.allowBreak(player, block.getLocation());
+		String noBuildReason = GriefPrevention.instance.allowBreak(player, block.getLocation(), playerData);
 		if(noBuildReason != null)
 		{
 			GriefPrevention.sendMessage(player, TextMode.Err, noBuildReason);
@@ -172,14 +174,13 @@ public class BlockEventHandler implements Listener
 			return;
 		}
 		
-		PlayerData playerData = this.dataStore.getPlayerData(player.getName());
 		Claim claim = this.dataStore.getClaimAt(block.getLocation(), true, playerData.lastClaim);
 		
 		//if there's a claim here
 		if(claim != null)
 		{
 			//if breaking UNDER the claim and the player has permission to build in the claim
-			if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player) == null)
+			if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player, playerData) == null)
 			{
 				//extend the claim downward beyond the breakage point
 				this.dataStore.extendClaim(claim, claim.getLesserBoundaryCorner().getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance);
@@ -235,12 +236,13 @@ public class BlockEventHandler implements Listener
 					GriefPrevention.sendMessage(player, TextMode.Err, Messages.PlayerTooCloseForFire, otherPlayer.getName());
 					placeEvent.setCancelled(true);
 					return;
-				}					
+				}
 			}
 		}
 		
 		//make sure the player is allowed to build at the location
-		String noBuildReason = GriefPrevention.instance.allowBuild(player, block.getLocation());
+		PlayerData playerData = this.dataStore.getPlayerData(player.getName());
+		String noBuildReason = GriefPrevention.instance.allowBuild(player, playerData, block.getLocation());
 		if(noBuildReason != null)
 		{
 			GriefPrevention.sendMessage(player, TextMode.Err, noBuildReason);
@@ -249,12 +251,11 @@ public class BlockEventHandler implements Listener
 		}
 		
 		//if the block is being placed within an existing claim
-		PlayerData playerData = this.dataStore.getPlayerData(player.getName());
 		Claim claim = this.dataStore.getClaimAt(block.getLocation(), true, playerData.lastClaim);
 		if(claim != null)
 		{
 			//if the player has permission for the claim and he's placing UNDER the claim
-			if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player) == null)
+			if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player, playerData) == null)
 			{
 				//extend the claim downward
 				this.dataStore.extendClaim(claim, claim.getLesserBoundaryCorner().getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance);
@@ -351,7 +352,7 @@ public class BlockEventHandler implements Listener
 				GriefPrevention.sendMessage(player, TextMode.Warn, Messages.BuildingOutsideClaims);
 				playerData.unclaimedBlockPlacementsUntilWarning = 15;
 				
-				if(playerData.lastClaim != null && playerData.lastClaim.allowBuild(player) == null)
+				if(playerData.lastClaim != null && playerData.lastClaim.allowBuild(player, playerData) == null)
 				{
 					Visualization visualization = Visualization.FromClaim(playerData.lastClaim, block.getY(), VisualizationType.Claim, player.getLocation());
 					Visualization.Apply(player, visualization);

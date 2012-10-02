@@ -91,7 +91,7 @@ public class PlayerData
 	public Claim lastClaim = null;
 	
 	//siege
-	public SiegeData siegeData = null;
+	// public SiegeData siegeData = null;
 	
 	//pvp
 	public long lastPvpTimestamp = 0;

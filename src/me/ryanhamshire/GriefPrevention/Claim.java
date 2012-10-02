@@ -73,7 +73,7 @@ public class Claim
 	public ArrayList<Claim> children = new ArrayList<Claim>();
 	
 	//information about a siege involving this claim.  null means no siege is impacting this claim
-	public SiegeData siegeData = null;
+	// public SiegeData siegeData = null;
 	
 	//following a siege, buttons/levers are unlocked temporarily.  this represents that state
 	public boolean doorsOpen = false;
@@ -100,14 +100,14 @@ public class Claim
 	
 	//players may only siege someone when he's not in an admin claim 
 	//and when he has some level of permission in the claim
-	public boolean canSiege(Player defender)
-	{
-		if(this.isAdminClaim()) return false;
+	// public boolean cansiege(player defender)
+	// {
+		// if(this.isadminclaim()) return false;
 		
-		if(this.allowAccess(defender) != null) return false;
+		// if(this.allowaccess(defender) != null) return false;
 		
-		return true;
-	}
+		// return true;
+	// }
 	
 	//removes any fluids above sea level in a claim
 	//exclusionClaim is another claim indicating an sub-area to be excluded from this operation
@@ -280,7 +280,7 @@ public class Claim
 	
 	//permissions.  note administrative "public" claims have different rules than other claims
 	//all of these return NULL when a player has permission, or a String error message when the player doesn't have permission
-	public String allowEdit(Player player)
+	public String allowEdit(Player player, PlayerData playerData)
 	{
 		//if we don't know who's asking, always say no (i've been told some mods can make this happen somehow)
 		if(player == null) return "";
@@ -300,33 +300,33 @@ public class Claim
 		}
 		
 		//no resizing, deleting, and so forth while under siege
-		if(this.ownerName.equals(player.getName()))
-		{
-			if(this.siegeData != null)
-			{
-				return GriefPrevention.instance.dataStore.getMessage(Messages.NoModifyDuringSiege);
-			}
+		// if(this.ownerName.equals(player.getName()))
+		// {
+			// if(this.siegeData != null)
+			// {
+				// return GriefPrevention.instance.dataStore.getMessage(Messages.NoModifyDuringSiege);
+			// }
 			
-			//otherwise, owners can do whatever
-			return null;
-		}
+			// //otherwise, owners can do whatever
+			// return null;
+		// }
 		
 		//permission inheritance for subdivisions
 		if(this.parent != null)
-			return this.parent.allowBuild(player);
+			return this.parent.allowBuild(player, playerData);
 		
 		//error message if all else fails
 		return GriefPrevention.instance.dataStore.getMessage(Messages.OnlyOwnersModifyClaims, this.getOwnerName());
 	}
 	
-	//build permission check
-	public String allowBuild(Player player)
+    // Additional playerData parameter for perf - so we don't have to lookup the map 30 times)
+	public String allowBuild(Player player, PlayerData playerData)
 	{
 		//if we don't know who's asking, always say no (i've been told some mods can make this happen somehow)
 		if(player == null) return "";
 		
 		//when a player tries to build in a claim, if he's under siege, the siege may extend to include the new claim
-		GriefPrevention.instance.dataStore.tryExtendSiege(player, this);
+		//GriefPrevention.instance.dataStore.tryExtendSiege(player, this);  // Siege functions removed for bMC
 		
 		//admin claims can always be modified by admins, no exceptions
 		if(this.isAdminClaim())
@@ -335,20 +335,19 @@ public class Claim
 		}
 		
 		//no building while under siege
-		if(this.siegeData != null)
-		{
-			return GriefPrevention.instance.dataStore.getMessage(Messages.NoBuildUnderSiege, this.siegeData.attacker.getName());
-		}
+		// if(this.siegeData != null)
+		// {
+			// return GriefPrevention.instance.dataStore.getMessage(Messages.NoBuildUnderSiege, this.siegeData.attacker.getName());
+		// }
 		
 		//no building while in pvp combat
-		PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getName());
 		if(playerData.inPvpCombat())
 		{
 			return GriefPrevention.instance.dataStore.getMessage(Messages.NoBuildPvP);			
 		}
 		
 		//owners can make changes, or admins with ignore claims mode enabled
-		if(this.ownerName.equals(player.getName()) || GriefPrevention.instance.dataStore.getPlayerData(player.getName()).ignoreClaims) return null;
+		if(this.ownerName.equals(player.getName()) || playerData.ignoreClaims) return null;
 		
 		//anyone with explicit build permission can make changes
 		if(this.hasExplicitPermission(player, ClaimPermission.Build)) return null;
@@ -359,7 +358,7 @@ public class Claim
 		
 		//subdivision permission inheritance
 		if(this.parent != null)
-			return this.parent.allowBuild(player);
+			return this.parent.allowBuild(player, playerData);
 		
 		//failure message for all other cases
 		return GriefPrevention.instance.dataStore.getMessage(Messages.NoBuildPermission, this.getOwnerName());
@@ -392,45 +391,45 @@ public class Claim
 	}
 	
 	//break permission check
-	public String allowBreak(Player player, Material material)
+	public String allowBreak(Player player, Material material, PlayerData playerData)
 	{
 		//if under siege, some blocks will be breakable
-		if(this.siegeData != null)
-		{
-			boolean breakable = false;
+		// if(this.siegeData != null)
+		// {
+			// boolean breakable = false;
 			
-			//search for block type in list of breakable blocks
-			for(int i = 0; i < GriefPrevention.instance.config_siege_blocks.size(); i++)
-			{
-				Material breakableMaterial = GriefPrevention.instance.config_siege_blocks.get(i);
-				if(breakableMaterial.getId() == material.getId())
-				{
-					breakable = true;
-					break;
-				}
-			}
+			// //search for block type in list of breakable blocks
+			// for(int i = 0; i < GriefPrevention.instance.config_siege_blocks.size(); i++)
+			// {
+				// Material breakableMaterial = GriefPrevention.instance.config_siege_blocks.get(i);
+				// if(breakableMaterial.getId() == material.getId())
+				// {
+					// breakable = true;
+					// break;
+				// }
+			// }
 			
-			//custom error messages for siege mode
-			if(!breakable)
-			{
-				return GriefPrevention.instance.dataStore.getMessage(Messages.NonSiegeMaterial);
-			}
-			else if(this.ownerName.equals(player.getName()))
-			{
-				return GriefPrevention.instance.dataStore.getMessage(Messages.NoOwnerBuildUnderSiege);
-			}
-			else
-			{
-				return null;
-			}
-		}
+			// //custom error messages for siege mode
+			// if(!breakable)
+			// {
+				// return GriefPrevention.instance.dataStore.getMessage(Messages.NonSiegeMaterial);
+			// }
+			// else if(this.ownerName.equals(player.getName()))
+			// {
+				// return GriefPrevention.instance.dataStore.getMessage(Messages.NoOwnerBuildUnderSiege);
+			// }
+			// else
+			// {
+				// return null;
+			// }
+		// }
 		
 		//if not under siege, build rules apply
-		return this.allowBuild(player);		
+		return this.allowBuild(player, playerData);		
 	}
 	
 	//access permission check
-	public String allowAccess(Player player)
+	public String allowAccess(Player player, PlayerData playerData)
 	{
 		//following a siege where the defender lost, the claim will allow everyone access for a time
 		if(this.doorsOpen) return null;
@@ -442,7 +441,7 @@ public class Claim
 		}
 		
 		//claim owner and admins in ignoreclaims mode have access
-		if(this.ownerName.equals(player.getName()) || GriefPrevention.instance.dataStore.getPlayerData(player.getName()).ignoreClaims) return null;
+		if(this.ownerName.equals(player.getName()) || playerData.ignoreClaims) return null;
 		
 		//look for explicit individual access, inventory, or build permission
 		if(this.hasExplicitPermission(player, ClaimPermission.Access)) return null;
@@ -455,29 +454,29 @@ public class Claim
 		
 		//permission inheritance for subdivisions
 		if(this.parent != null)
-			return this.parent.allowAccess(player);
+			return this.parent.allowAccess(player, playerData);
 		
 		//catch-all error message for all other cases
 		return GriefPrevention.instance.dataStore.getMessage(Messages.NoAccessPermission, this.getOwnerName());
 	}
 	
 	//inventory permission check
-	public String allowContainers(Player player)
+	public String allowContainers(Player player, PlayerData playerData)
 	{		
 		//if we don't know who's asking, always say no (i've been told some mods can make this happen somehow)
 		if(player == null) return "";
 		
 		//trying to access inventory in a claim may extend an existing siege to include this claim
-		GriefPrevention.instance.dataStore.tryExtendSiege(player, this);
+		// GriefPrevention.instance.dataStore.tryExtendSiege(player, this);
 		
 		//if under siege, nobody accesses containers
-		if(this.siegeData != null)
-		{
-			return GriefPrevention.instance.dataStore.getMessage(Messages.NoContainersSiege, siegeData.attacker.getName());
-		}
+		// if(this.siegeData != null)
+		// {
+			// return GriefPrevention.instance.dataStore.getMessage(Messages.NoContainersSiege, siegeData.attacker.getName());
+		// }
 		
 		//owner and administrators in ignoreclaims mode have access
-		if(this.ownerName.equals(player.getName()) || GriefPrevention.instance.dataStore.getPlayerData(player.getName()).ignoreClaims) return null;
+		if(this.ownerName.equals(player.getName()) || playerData.ignoreClaims) return null;
 		
 		//admin claims need adminclaims permission only.
 		if(this.isAdminClaim())
@@ -495,20 +494,20 @@ public class Claim
 		
 		//permission inheritance for subdivisions
 		if(this.parent != null)
-			return this.parent.allowContainers(player);
+			return this.parent.allowContainers(player, playerData);
 		
 		//error message for all other cases
 		return GriefPrevention.instance.dataStore.getMessage(Messages.NoContainersPermission, this.getOwnerName());
 	}
 	
 	//grant permission check, relatively simple
-	public String allowGrantPermission(Player player)
+	public String allowGrantPermission(Player player, PlayerData playerData)
 	{
 		//if we don't know who's asking, always say no (i've been told some mods can make this happen somehow)
 		if(player == null) return "";
 		
 		//anyone who can modify the claim can do this
-		if(this.allowEdit(player) == null) return null;
+		if(this.allowEdit(player, playerData) == null) return null;
 		
 		//anyone who's in the managers (/PermissionTrust) list can do this
 		for(int i = 0; i < this.managers.size(); i++)
@@ -526,7 +525,7 @@ public class Claim
 		
 		//permission inheritance for subdivisions
 		if(this.parent != null)
-			return this.parent.allowGrantPermission(player);
+			return this.parent.allowGrantPermission(player, playerData);
 		
 		//generic error message
 		return GriefPrevention.instance.dataStore.getMessage(Messages.NoPermissionTrust, this.getOwnerName());
@@ -707,42 +706,43 @@ public class Claim
 		if(this.parent != null) return this.parent.allowMoreEntities();
 		
 		//this rule only applies to creative mode worlds
-		if(!GriefPrevention.instance.creativeRulesApply(this.getLesserBoundaryCorner())) return null;
+        return null;
+		// if(!GriefPrevention.instance.creativeRulesApply(this.getLesserBoundaryCorner())) return null;
 		
-		//admin claims aren't restricted
-		if(this.isAdminClaim()) return null;
+		// //admin claims aren't restricted
+		// if(this.isAdminClaim()) return null;
 		
-		//don't apply this rule to very large claims
-		if(this.getArea() > 10000) return null;
+		// //don't apply this rule to very large claims
+		// if(this.getArea() > 10000) return null;
 		
-		//determine maximum allowable entity count, based on claim size
-		int maxEntities = this.getArea() / 50;		
-		if(maxEntities == 0) return GriefPrevention.instance.dataStore.getMessage(Messages.ClaimTooSmallForEntities);
+		// //determine maximum allowable entity count, based on claim size
+		// int maxEntities = this.getArea() / 50;		
+		// if(maxEntities == 0) return GriefPrevention.instance.dataStore.getMessage(Messages.ClaimTooSmallForEntities);
 		
-		//count current entities (ignoring players)
-		Chunk lesserChunk = this.getLesserBoundaryCorner().getChunk();
-		Chunk greaterChunk = this.getGreaterBoundaryCorner().getChunk();
+		// //count current entities (ignoring players)
+		// Chunk lesserChunk = this.getLesserBoundaryCorner().getChunk();
+		// Chunk greaterChunk = this.getGreaterBoundaryCorner().getChunk();
 		
-		int totalEntities = 0;
-		for(int x = lesserChunk.getX(); x <= greaterChunk.getX(); x++)
-			for(int z = lesserChunk.getZ(); z <= greaterChunk.getZ(); z++)
-			{
-				Chunk chunk = lesserChunk.getWorld().getChunkAt(x, z);
-				Entity [] entities = chunk.getEntities();
-				for(int i = 0; i < entities.length; i++)
-				{
-					Entity entity = entities[i];
-					if(!(entity instanceof Player) && this.contains(entity.getLocation(), false, false))
-					{
-						totalEntities++;
-						if(totalEntities > maxEntities) entity.remove();
-					}
-				}
-			}
+		// int totalEntities = 0;
+		// for(int x = lesserChunk.getX(); x <= greaterChunk.getX(); x++)
+			// for(int z = lesserChunk.getZ(); z <= greaterChunk.getZ(); z++)
+			// {
+				// Chunk chunk = lesserChunk.getWorld().getChunkAt(x, z);
+				// Entity [] entities = chunk.getEntities();
+				// for(int i = 0; i < entities.length; i++)
+				// {
+					// Entity entity = entities[i];
+					// if(!(entity instanceof Player) && this.contains(entity.getLocation(), false, false))
+					// {
+						// totalEntities++;
+						// if(totalEntities > maxEntities) entity.remove();
+					// }
+				// }
+			// }
 
-		if(totalEntities > maxEntities) return GriefPrevention.instance.dataStore.getMessage(Messages.TooManyEntitiesInClaim);
+		// if(totalEntities > maxEntities) return GriefPrevention.instance.dataStore.getMessage(Messages.TooManyEntitiesInClaim);
 		
-		return null;
+		// return null;
 	}
 	
 	//implements a strict ordering of claims, used to keep the claims collection sorted for faster searching
@@ -771,7 +771,7 @@ public class Claim
 		//scan the claim for player placed blocks
 		double score = 0;
 		
-		boolean creativeMode = GriefPrevention.instance.creativeRulesApply(lesserBoundaryCorner);
+		// boolean creativeMode = GriefPrevention.instance.creativeRulesApply(lesserBoundaryCorner);
 		
 		for(int x = this.lesserBoundaryCorner.getBlockX(); x <= this.greaterBoundaryCorner.getBlockX(); x++)
 		{
@@ -783,7 +783,8 @@ public class Claim
 					Block block = this.lesserBoundaryCorner.getWorld().getBlockAt(x, y, z);
 					if(playerBlocks.contains(block.getTypeId()))
 					{
-						if(block.getType() == Material.CHEST && !creativeMode)
+						// if(block.getType() == Material.CHEST && !creativeMode)
+						if(block.getType() == Material.CHEST)
 						{
 							score += 10;
 						}
@@ -799,14 +800,15 @@ public class Claim
 					Block block = this.lesserBoundaryCorner.getWorld().getBlockAt(x, y, z);
 					if(playerBlocks.contains(block.getTypeId()))
 					{
-						if(block.getType() == Material.CHEST && !creativeMode)
+						// if(block.getType() == Material.CHEST && !creativeMode)
+						if(block.getType() == Material.CHEST)
 						{
 							score += 10;
 						}
-						else if(creativeMode && (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA))
-						{
-							score -= 10;
-						}
+						// else if(creativeMode && (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA))
+						// {
+							// score -= 10;
+						// }
 						else 
 						{
 							score += 1;

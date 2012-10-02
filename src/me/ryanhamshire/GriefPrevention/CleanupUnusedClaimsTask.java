@@ -88,10 +88,10 @@ class CleanupUnusedClaimsTask implements Runnable
 				GriefPrevention.instance.dataStore.deleteClaim(claim);
 				
 				//if in a creative mode world, delete the claim
-				if(GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()))
-				{
-					GriefPrevention.instance.restoreClaim(claim, 0);
-				}
+				// if(GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()))
+				// {
+					// GriefPrevention.instance.restoreClaim(claim, 0);
+				// }
 				
 				GriefPrevention.AddLogEntry(" " + claim.getOwnerName() + "'s new player claim expired.");
 			}
@@ -122,17 +122,19 @@ class CleanupUnusedClaimsTask implements Runnable
 			if(claim.isAdminClaim() || claim.getWidth() > 25 || claim.getHeight() > 25) return;
 			
 			//if creative mode or the claim owner has been away a long enough time, scan the claim content
-			if(needsInvestmentScan || GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()))
+			// if(needsInvestmentScan || GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()))
+			if(needsInvestmentScan)
 			{
-				int minInvestment;
-				if(GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()))
-				{
-					minInvestment = 400;
-				}
-				else
-				{
-					minInvestment = 200;
-				}
+				int minInvestment = 200;
+				// int minInvestment;
+				// if(GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()))
+				// {
+					// minInvestment = 400;
+				// }
+				// else
+				// {
+					// minInvestment = 200;
+				// }
 				
 				long investmentScore = claim.getPlayerInvestmentScore();
 				boolean removeClaim = false;
@@ -140,13 +142,14 @@ class CleanupUnusedClaimsTask implements Runnable
 				//in creative mode, a build which is almost entirely lava above sea level will be automatically removed, even if the owner is an active player
 				//lava above the surface deducts 10 points per block from the investment score
 				//so 500 blocks of lava without anything built to offset all that potential mess would be cleaned up automatically
-				if(GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()) && investmentScore < -5000)
-				{
-					removeClaim = true;
-				}			
+				// if(GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()) && investmentScore < -5000)
+				// {
+					// removeClaim = true;
+				// }			
 				
 				//otherwise, the only way to get a claim automatically removed based on build investment is to be away for two weeks AND not build much of anything
-				else if(needsInvestmentScan && investmentScore < minInvestment)
+				// else 
+                if(needsInvestmentScan && investmentScore < minInvestment)
 				{
 					removeClaim = true;
 				}
@@ -157,10 +160,10 @@ class CleanupUnusedClaimsTask implements Runnable
 					GriefPrevention.AddLogEntry("Removed " + claim.getOwnerName() + "'s unused claim @ " + GriefPrevention.getfriendlyLocationString(claim.getLesserBoundaryCorner()));
 					
 					//if in a creative mode world, restore the claim area
-					if(GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()))
-					{
-						GriefPrevention.instance.restoreClaim(claim, 0);
-					}
+					// if(GriefPrevention.instance.creativeRulesApply(claim.getLesserBoundaryCorner()))
+					// {
+						// GriefPrevention.instance.restoreClaim(claim, 0);
+					// }
 				}
 			}
 		}
