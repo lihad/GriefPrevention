@@ -300,16 +300,16 @@ public class Claim
 		}
 		
 		//no resizing, deleting, and so forth while under siege
-		// if(this.ownerName.equals(player.getName()))
-		// {
+		if(this.ownerName.equals(player.getName()))
+		{
 			// if(this.siegeData != null)
 			// {
 				// return GriefPrevention.instance.dataStore.getMessage(Messages.NoModifyDuringSiege);
 			// }
 			
-			// //otherwise, owners can do whatever
-			// return null;
-		// }
+			//otherwise, owners can do whatever
+			return null;
+		}
 		
 		//permission inheritance for subdivisions
 		if(this.parent != null)
