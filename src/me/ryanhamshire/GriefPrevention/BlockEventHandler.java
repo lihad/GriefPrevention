@@ -174,18 +174,18 @@ public class BlockEventHandler implements Listener
 			return;
 		}
 		
-		Claim claim = this.dataStore.getClaimAt(block.getLocation(), true, playerData.lastClaim);
+		// Claim claim = this.dataStore.getClaimAt(block.getLocation(), true, playerData.lastClaim);
 		
 		//if there's a claim here
-		if(claim != null)
-		{
+		// if(claim != null)
+		// {
 			//if breaking UNDER the claim and the player has permission to build in the claim
 			// if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player, playerData) == null)
 			// {
 				// //extend the claim downward beyond the breakage point
 				// this.dataStore.extendClaim(claim, claim.getLesserBoundaryCorner().getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance);
 			// }
-		}
+		// }
 	}
 	
 	//when a player places a sign...
