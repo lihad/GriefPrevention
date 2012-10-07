@@ -1368,8 +1368,8 @@ class PlayerEventHandler implements Listener
 					newz2 = playerData.claimResizing.getGreaterBoundaryCorner().getBlockZ();
 				}
 				
-				newy1 = playerData.claimResizing.getLesserBoundaryCorner().getBlockY();
-				newy2 = clickedBlock.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance;
+				newy1 = 0;//playerData.claimResizing.getLesserBoundaryCorner().getBlockY();
+				newy2 = 0;//clickedBlock.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance;
 				
 				//for top level claims, apply size rules and claim blocks requirement
 				if(playerData.claimResizing.parent == null)
@@ -1523,7 +1523,7 @@ class PlayerEventHandler implements Listener
 							CreateClaimResult result = this.dataStore.createClaim(
 									player.getWorld(), 
 									playerData.lastShovelLocation.getBlockX(), clickedBlock.getX(), 
-									playerData.lastShovelLocation.getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, clickedBlock.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, 
+									0, 0, //playerData.lastShovelLocation.getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, clickedBlock.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, 
 									playerData.lastShovelLocation.getBlockZ(), clickedBlock.getZ(), 
 									"--subdivision--",  //owner name is not used for subdivisions
 									playerData.claimSubdividing,
@@ -1637,7 +1637,7 @@ class PlayerEventHandler implements Listener
 				CreateClaimResult result = this.dataStore.createClaim(
 						player.getWorld(), 
 						lastShovelLocation.getBlockX(), clickedBlock.getX(), 
-						lastShovelLocation.getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, clickedBlock.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, 
+						0, 0, //lastShovelLocation.getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, clickedBlock.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, 
 						lastShovelLocation.getBlockZ(), clickedBlock.getZ(), 
 						playerName,
 						null, null);

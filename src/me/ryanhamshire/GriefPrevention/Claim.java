@@ -611,15 +611,17 @@ public class Claim
 	//excludeSubdivisions = true means that locations inside subdivisions of the claim will return FALSE
 	public boolean contains(Location location, boolean ignoreHeight, boolean excludeSubdivisions)
 	{
+        // HACKHACK: All claims are bedrock to sky.  ignoreHeight is treated as if it's always true
+    
 		//not in the same world implies false
 		if(!location.getWorld().equals(this.lesserBoundaryCorner.getWorld())) return false;
 		
 		int x = location.getBlockX();
-		int y = location.getBlockY();
+		//int y = location.getBlockY();
 		int z = location.getBlockZ();
 		
 		//main check
-		boolean inClaim = (ignoreHeight || y >= this.lesserBoundaryCorner.getBlockY()) &&
+		boolean inClaim = //(ignoreHeight || y >= this.lesserBoundaryCorner.getBlockY()) &&
 				x >= this.lesserBoundaryCorner.getBlockX() &&
 				x <= this.greaterBoundaryCorner.getBlockX() &&
 				z >= this.lesserBoundaryCorner.getBlockZ() &&
@@ -762,62 +764,62 @@ public class Claim
 		return thisCorner.getWorld().getName().compareTo(otherCorner.getWorld().getName()) < 0;
 	}
 	
-	long getPlayerInvestmentScore()
-	{
-		//decide which blocks will be considered player placed
-		Location lesserBoundaryCorner = this.getLesserBoundaryCorner();
-		ArrayList<Integer> playerBlocks = RestoreNatureProcessingTask.getPlayerBlocks(lesserBoundaryCorner.getWorld().getEnvironment(), lesserBoundaryCorner.getBlock().getBiome());
+	// long getPlayerInvestmentScore()
+	// {
+		// //decide which blocks will be considered player placed
+		// Location lesserBoundaryCorner = this.getLesserBoundaryCorner();
+		// ArrayList<Integer> playerBlocks = RestoreNatureProcessingTask.getPlayerBlocks(lesserBoundaryCorner.getWorld().getEnvironment(), lesserBoundaryCorner.getBlock().getBiome());
 		
-		//scan the claim for player placed blocks
-		double score = 0;
+		// //scan the claim for player placed blocks
+		// double score = 0;
 		
-		// boolean creativeMode = GriefPrevention.instance.creativeRulesApply(lesserBoundaryCorner);
+		// // boolean creativeMode = GriefPrevention.instance.creativeRulesApply(lesserBoundaryCorner);
 		
-		for(int x = this.lesserBoundaryCorner.getBlockX(); x <= this.greaterBoundaryCorner.getBlockX(); x++)
-		{
-			for(int z = this.lesserBoundaryCorner.getBlockZ(); z <= this.greaterBoundaryCorner.getBlockZ(); z++)
-			{
-				int y = this.lesserBoundaryCorner.getBlockY();
-				for(; y < this.lesserBoundaryCorner.getWorld().getSeaLevel(); y++)
-				{
-					Block block = this.lesserBoundaryCorner.getWorld().getBlockAt(x, y, z);
-					if(playerBlocks.contains(block.getTypeId()))
-					{
-						// if(block.getType() == Material.CHEST && !creativeMode)
-						if(block.getType() == Material.CHEST)
-						{
-							score += 10;
-						}
-						else
-						{
-							score += .2;
-						}						
-					}
-				}
-				
-				for(; y < this.lesserBoundaryCorner.getWorld().getMaxHeight(); y++)
-				{
-					Block block = this.lesserBoundaryCorner.getWorld().getBlockAt(x, y, z);
-					if(playerBlocks.contains(block.getTypeId()))
-					{
-						// if(block.getType() == Material.CHEST && !creativeMode)
-						if(block.getType() == Material.CHEST)
-						{
-							score += 10;
-						}
-						// else if(creativeMode && (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA))
+		// for(int x = this.lesserBoundaryCorner.getBlockX(); x <= this.greaterBoundaryCorner.getBlockX(); x++)
+		// {
+			// for(int z = this.lesserBoundaryCorner.getBlockZ(); z <= this.greaterBoundaryCorner.getBlockZ(); z++)
+			// {
+				// int y = this.lesserBoundaryCorner.getBlockY();
+				// for(; y < this.lesserBoundaryCorner.getWorld().getSeaLevel(); y++)
+				// {
+					// Block block = this.lesserBoundaryCorner.getWorld().getBlockAt(x, y, z);
+					// if(playerBlocks.contains(block.getTypeId()))
+					// {
+						// // if(block.getType() == Material.CHEST && !creativeMode)
+						// if(block.getType() == Material.CHEST)
 						// {
-							// score -= 10;
+							// score += 10;
 						// }
-						else 
-						{
-							score += 1;
-						}						
-					}
-				}
-			}
-		}
+						// else
+						// {
+							// score += .2;
+						// }						
+					// }
+				// }
+				
+				// for(; y < this.lesserBoundaryCorner.getWorld().getMaxHeight(); y++)
+				// {
+					// Block block = this.lesserBoundaryCorner.getWorld().getBlockAt(x, y, z);
+					// if(playerBlocks.contains(block.getTypeId()))
+					// {
+						// // if(block.getType() == Material.CHEST && !creativeMode)
+						// if(block.getType() == Material.CHEST)
+						// {
+							// score += 10;
+						// }
+						// // else if(creativeMode && (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA))
+						// // {
+							// // score -= 10;
+						// // }
+						// else 
+						// {
+							// score += 1;
+						// }						
+					// }
+				// }
+			// }
+		// }
 		
-		return (long)score;
-	}
+		// return (long)score;
+	// }
 }

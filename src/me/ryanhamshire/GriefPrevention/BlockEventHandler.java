@@ -180,11 +180,11 @@ public class BlockEventHandler implements Listener
 		if(claim != null)
 		{
 			//if breaking UNDER the claim and the player has permission to build in the claim
-			if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player, playerData) == null)
-			{
-				//extend the claim downward beyond the breakage point
-				this.dataStore.extendClaim(claim, claim.getLesserBoundaryCorner().getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance);
-			}
+			// if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player, playerData) == null)
+			// {
+				// //extend the claim downward beyond the breakage point
+				// this.dataStore.extendClaim(claim, claim.getLesserBoundaryCorner().getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance);
+			// }
 		}
 	}
 	
@@ -255,11 +255,11 @@ public class BlockEventHandler implements Listener
 		if(claim != null)
 		{
 			//if the player has permission for the claim and he's placing UNDER the claim
-			if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player, playerData) == null)
-			{
-				//extend the claim downward
-				this.dataStore.extendClaim(claim, claim.getLesserBoundaryCorner().getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance);
-			}
+			// if(block.getY() < claim.lesserBoundaryCorner.getBlockY() && claim.allowBuild(player, playerData) == null)
+			// {
+				// //extend the claim downward
+				// this.dataStore.extendClaim(claim, claim.getLesserBoundaryCorner().getBlockY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance);
+			// }
 			
 			//reset the counter for warning the player when he places outside his claims
 			playerData.unclaimedBlockPlacementsUntilWarning = 1;
@@ -495,28 +495,28 @@ public class BlockEventHandler implements Listener
 		if(igniteEvent.getCause() != IgniteCause.FLINT_AND_STEEL  && !GriefPrevention.instance.config_fireSpreads) igniteEvent.setCancelled(true);
 	}
 	
-	//fire doesn't spread unless configured to, but other blocks still do (mushrooms and vines, for example)
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onBlockSpread (BlockSpreadEvent spreadEvent)
-	{
-		if(spreadEvent.getSource().getType() == Material.FIRE && !GriefPrevention.instance.config_fireSpreads) spreadEvent.setCancelled(true);
-	}
+	// //fire doesn't spread unless configured to, but other blocks still do (mushrooms and vines, for example)
+	// @EventHandler(priority = EventPriority.LOWEST)
+	// public void onBlockSpread (BlockSpreadEvent spreadEvent)
+	// {
+		// if(spreadEvent.getSource().getType() == Material.FIRE && !GriefPrevention.instance.config_fireSpreads) spreadEvent.setCancelled(true);
+	// }
 	
-	//blocks are not destroyed by fire, unless configured to do so
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onBlockBurn (BlockBurnEvent burnEvent)
-	{
-		if(!GriefPrevention.instance.config_fireDestroys)
-		{
-			burnEvent.setCancelled(true);
-		}
+	// //blocks are not destroyed by fire, unless configured to do so
+	// @EventHandler(priority = EventPriority.LOWEST)
+	// public void onBlockBurn (BlockBurnEvent burnEvent)
+	// {
+		// if(!GriefPrevention.instance.config_fireDestroys)
+		// {
+			// burnEvent.setCancelled(true);
+		// }
 		
-		//never burn claimed blocks, regardless of settings
-		if(this.dataStore.getClaimAt(burnEvent.getBlock().getLocation(), false, null) != null)
-		{
-			burnEvent.setCancelled(true);
-		}
-	}
+		// //never burn claimed blocks, regardless of settings
+		// if(this.dataStore.getClaimAt(burnEvent.getBlock().getLocation(), false, null) != null)
+		// {
+			// burnEvent.setCancelled(true);
+		// }
+	// }
 	
 	//ensures fluids don't flow out of claims, unless into another claim where the owner is trusted to build
 	private Claim lastSpreadClaim = null;

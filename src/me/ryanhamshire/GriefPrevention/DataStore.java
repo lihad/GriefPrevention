@@ -395,6 +395,9 @@ public abstract class DataStore
 	//does NOT visualize the new claim for any players	
 	synchronized public CreateClaimResult createClaim(World world, int x1, int x2, int y1, int y2, int z1, int z2, String ownerName, Claim parent, Long id)
 	{
+        // HACK: Hardcode all claims go bedrock to sky
+        y1 = y2 = 0;
+    
 		CreateClaimResult result = new CreateClaimResult();
 		
 		int smallx, bigx, smally, bigy, smallz, bigz;
